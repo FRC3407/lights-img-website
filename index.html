@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="loadimg.js" defer></script>
+    <script src="img.js" defer></script>
+    <script src="anim.js" defer></script>
+
+    <title>Lights Image Loader</title>
+</head>
+<body>
+    
+    <h1>Do you like making lights animation for the robot?</h1>
+    <h1>Sure you do! Now it'll be even easier</h1>
+
+    <canvas id="kansas" style="display: none;"></canvas>
+
+    <input type="file" id="imginput" accept=".png, .gif" onchange="loadImage(event)">
+
+    <img src="" alt="" style="width: 800px; height: 800px; image-rendering: pixelated;">
+
+    <button onclick="console.log(loadFromCanvas())">Get Py Code !!!</button>
+
+    <div style="background-color: #222; border: 2px solid lightblue; border-radius: 15px; padding: 10px; color: white;">
+        <pre id="pycode" style="text-wrap-mode: wrap;"></pre>
+    </div>
+
+    <script>
+        const imginput = document.querySelector('input');
+        const canvas = document.getElementById('kansas');
+        if (!imginput) console.error('file input not found: use <input type="file">');
+        if (!canvas) console.error('canvas#kansas not found');
+        
+        const ctx = canvas.getContext('2d');
+        if (!ctx) console.error('No CTX???');
+    </script>
+
+</body>
+</html>
