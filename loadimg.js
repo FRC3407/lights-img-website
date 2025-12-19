@@ -1,3 +1,11 @@
+const imginput = document.querySelector('input');
+const canvas = document.getElementById('kansas');
+if (!imginput) console.error('file input not found: use <input type="file">');
+if (!canvas) console.error('canvas#kansas not found');
+
+const ctx = canvas.getContext('2d');
+if (!ctx) console.error('No CTX???');
+
 async function loadImage(e) {
     const isFile = e && e.target && e.target.files && e.target.files[0];
     
@@ -30,13 +38,12 @@ async function loadImage(e) {
 
         ctx.fillStyle = 'black';
         ctx.imageSmoothingEnabled = false;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.clearRect(0, 0, img.width, img.height);
+        ctx.fillRect(0, 0, img.width, img.height);
         ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, canvas.width, canvas.height);
         
-        URL.revokeObjectURL(url);
-
         document.querySelector('img').src = url;
+        
+        URL.revokeObjectURL(url);
     };
 
     img.onerror = (err) => {

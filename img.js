@@ -1,5 +1,8 @@
-function getImgData(brightness = 0.05) {
+function getImgData(canvas, brightness = 0.05) {
     try {
+        const ctx = canvas.getContext('2d');
+        if (!ctx) console.error('No CTX???');
+
         const width = canvas.width;
         const height = canvas.height;
         
@@ -61,8 +64,8 @@ function alphaToRGB(color, brightness) {
 }
 
 // Generates the code that puts the image onto the lights
-function generate_py_code(pixeldata, colorlist, boardinput = 15) {
-    if (boardinput < 0 || boardinput > 28) return;
+function generate_py_code(pixeldata, colorlist, boardinput = 'GP15') {
+    // MAKE SAFE CODE FOR BOARD INPUT HERE
 
     const pixelDataStr = '[' + pixeldata.map(row => '[' + row.join(', ') + ']').join(', ') + ']';
     const colorListStr = '[' + colorlist.map(clr => `(${clr.r}, ${clr.g}, ${clr.b})`).join(', ') + ']';
@@ -76,7 +79,7 @@ import board
 imgdata = ${pixelDataStr}
 colorlist = ${colorListStr}
 
-pixel = pixelstrip.PixelStrip(board.GP${boardinput}, width=${pixeldata[0].length}, height=${pixeldata.length}, bpp=4, pixel_order=pixelstrip.GRB, 
+pixel = pixelstrip.PixelStrip(board.${boardinput}, width=len(imgdata[0]), height=len(imgdata), bpp=4, pixel_order=pixelstrip.GRB, 
                         options={pixelstrip.MATRIX_COLUMN_MAJOR, pixelstrip.MATRIX_ZIGZAG})
 
 pixel.timeout = 0.0
@@ -84,15 +87,15 @@ pixel.timeout = 0.0
 pixel.clear()
 for i in range(len(imgdata)):
     for j in range(len(imgdata)):
-        pixel[i, 7-j] = colorlist[imgdata[i][j]]
+        pixel[i, len(imgdata)-1-j] = colorlist[imgdata[i][j]]
 pixel.show()
 `;
 }
 
 function loadFromCanvas() {
-    const { pixelData, colorList } = getImgData(0.05);
+    const { pixelData, colorList } = getImgData(document.querySelector('canvas#kansas'), 0.05);
 
-    const pycode = generate_py_code(pixelData, colorList, 15);
+    const pycode = generate_py_code(pixelData, colorList, 'GP15');
     document.getElementById('pycode').innerHTML = pycode;
     return pycode;
 }

@@ -4,9 +4,74 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <script src="https://unpkg.com/gif-frames@1.0.1?main=bundled-min"></script>
+
     <script src="loadimg.js" defer></script>
     <script src="img.js" defer></script>
     <script src="anim.js" defer></script>
+
+    <script>
+        function downloadCode() {
+
+            const code = document.getElementById('pycode').innerHTML;
+            if (code == '') return;
+
+            const blob = new Blob([code]);
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'plingo.py';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+
+        }
+
+        var imgurl = new URL('');
+    </script>
+
+    <script defer>
+        function exportCode() {
+            try {
+                if (imgurl == '') return;
+
+                const fileinput = document.querySelector('input#imginput');
+                const isFile = fileinput && fileinput.files && fileinput.files[0];
+                
+                if (!isFile) {
+                    alert('Somehow no file loaded?');
+                    return;
+                }
+                
+                const file = fileinput.files[0];
+
+                if (file.type.includes('gif')) getCodeFromGif();
+                else loadFromCanvas();
+
+                document.querySelector('button#downloadbutton').style.display = 'block';
+            }
+            catch (err) {
+                alert(err.message);
+            }
+        }
+    </script>
+
+    <style>
+        button {
+            border: 2px solid lightblue;
+            border-radius: 15px;
+            background-color: #222;
+            color: white;
+            padding: 10px;
+
+            transition: 300ms ease-in-out;
+        }
+
+        button:hover {
+            background-color: #777;
+        }
+    </style>
 
     <title>Lights Image Loader</title>
 </head>
@@ -19,23 +84,15 @@
 
     <input type="file" id="imginput" accept=".png, .gif" onchange="loadImage(event)">
 
-    <img src="" alt="" style="width: 800px; height: 800px; image-rendering: pixelated;">
+    <img src="./insertimagehere.png" style="width: 500px; height: 500px; image-rendering: pixelated;">
 
-    <button onclick="console.log(loadFromCanvas())">Get Py Code !!!</button>
+    <button onclick="exportCode()">Get Py Code !!!</button>
 
-    <div style="background-color: #222; border: 2px solid lightblue; border-radius: 15px; padding: 10px; color: white;">
+    <div style="position: relative; background-color: #222; border: 2px solid lightblue; border-radius: 15px; padding: 10px; color: white;">
         <pre id="pycode" style="text-wrap-mode: wrap;"></pre>
-    </div>
 
-    <script>
-        const imginput = document.querySelector('input');
-        const canvas = document.getElementById('kansas');
-        if (!imginput) console.error('file input not found: use <input type="file">');
-        if (!canvas) console.error('canvas#kansas not found');
-        
-        const ctx = canvas.getContext('2d');
-        if (!ctx) console.error('No CTX???');
-    </script>
+        <button id="downloadbutton" style="display: none; position: absolute; right: 10px; bottom: 10px;" onclick="downloadCode()">Download Code</button>
+    </div>
 
 </body>
 </html>
