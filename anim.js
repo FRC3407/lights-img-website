@@ -66,7 +66,7 @@ function generateCodeFromGif(framedata, colorlist, animspeed = 0.25, boardinput 
     const framedataStr = JSON.stringify(framedata);
     const colorListStr = '[' + colorlist.map(clr => `(${clr.r}, ${clr.g}, ${clr.b})`).join(', ') + ']';
     
-    return `import pixelstrip
+    const nakedcode = `import pixelstrip
 import board
 import time
 
@@ -92,6 +92,55 @@ while True:
     current_frame += 1
     if current_frame >= len(imgdata): current_frame = 0
 `;
+
+    const classistcode = `import board
+import pixelstrip
+from colors import *
+
+
+class ImageAnimation(pixelstrip.Animation):
+
+    def __init__(self, cycle_time=0.5):
+        pixelstrip.Animation.__init__(self)
+        self.cycle_time = cycle_time
+        self.current_frame = 0
+        self.imgdata = ${framedataStr}
+        self.colorlist = ${colorListStr}
+
+        self.frames = len(self.imgdata)
+        self.width = len(self.imgdata[0][0])
+        self.height = len(self.imgdata[0])
+
+    def reset(self, matrix):
+        self.timeout = self.cycle_time
+        matrix.clear()
+        matrix.show()
+        self.current_frame = 0
+
+    def draw(self, matrix, delta_time):
+        if self.is_timed_out():
+            self.draw_image(matrix, self.current_frame)
+            self.current_frame = (self.current_frame + 1) % self.frames
+            matrix.show()
+            self.timeout = self.cycle_time
+    
+    def draw_image(self, matrix, frame):
+        matrix.fill(BLACK)
+        for i in range(self.width):
+            # print(self.imgdata[frame])
+            for j in range(self.height):
+                matrix[i, self.height-1-j] = self.colorlist[self.imgdata[frame][i][j]]
+
+
+
+
+if __name__ == "__main__": 
+    matrix = pixelstrip.PixelStrip(board.${boardinput}, width=${framedata[0].length}, height=${framedata.length}, bpp=4, pixel_order=pixelstrip.GRB, options={pixelstrip.MATRIX_COLUMN_MAJOR, pixelstrip.MATRIX_ZIGZAG})
+    matrix.animation = ImageAnimation(${toString(animspeed)})
+    while True:
+        matrix.draw()`;
+    
+    return (document.querySelector('input#animationclass').checked ? classistcode : nakedcode);
 }
 
 
